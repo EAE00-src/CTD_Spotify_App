@@ -1,2 +1,4 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+    themes: sunset --default, dark --prefersdark, light, night, abyss, cmyk, autumn, caramellatte;
+}
