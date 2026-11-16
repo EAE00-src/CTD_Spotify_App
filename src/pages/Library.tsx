@@ -45,6 +45,7 @@ const Library: React.FC = () => {
                                 src={playlist.images[0].url}
                                 alt={playlist.name}
                                 className="w-full aspect-square object-cover rounded-md"
+                                loading="lazy"
                             />
                         ) : (
                             <div className="w-full aspect-square bg-neutral rounded-md flex items-center justify-center text-neutral-content">

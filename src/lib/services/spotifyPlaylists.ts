@@ -35,13 +35,16 @@ export interface SpotifyTrack {
     id: string;
     name: string;
     duration_ms: number;
-    preview_url: string | null; //30-sec audio previews provided by Spotify
+    preview_url: string | null; //30-sec audio previews provided by Spotify (deprecated)
     artists: SpotifyArtist[];
     album: SpotifyAlbum;
     uri: string;
+    external_urls: {
+        spotify: string;
+    }
 }
 export interface PlaylistTrackItem {
-    track: SpotifyTrack;
+    item: SpotifyTrack;
 }
 export interface PlaylistTracksResponse{
     items: PlaylistTrackItem[];
@@ -50,6 +53,6 @@ export interface PlaylistTracksResponse{
 
 //axios fetch method
 export const getPlaylistTracks = async(playlistId: string): Promise<PlaylistTracksResponse> => {
-    const response = await spotifyApi.get<PlaylistTracksResponse>(`/playlists/${playlistId}/tracks`);
+    const response = await spotifyApi.get<PlaylistTracksResponse>(`/playlists/${playlistId}/items`);
     return response.data
 }

@@ -31,7 +31,7 @@ export const Player: React.FC<PlayerProps> = ({currentTrack, queue, onTrackChang
                 audioRef.current.src = '';
                 setIsPlaying(false);
                 if(currentTrack){
-                    toast.error(`"${currentTrack.name}" has no 30-second preview available.`, {icon: '❌'})
+                    toast.error(`"${currentTrack.name}" has no 30-second preview available. It's recommended that you listen to the song directly from Spotify itself!`, {icon: '❌'})
                 }
             }
         }
@@ -75,7 +75,7 @@ export const Player: React.FC<PlayerProps> = ({currentTrack, queue, onTrackChang
                 onEnded={handleNext}
             />
             {/**Left: Track info */}
-            <div>
+            <div className="flex items-center gap-4 w-1/4">
                 {currentTrack?.album?.images?.[0]?.url ? (
                     <img 
                         src={currentTrack.album.images[0].url}
@@ -122,7 +122,7 @@ export const Player: React.FC<PlayerProps> = ({currentTrack, queue, onTrackChang
                     </button>
                 </div>
                 {!currentTrack?.preview_url && currentTrack && (
-                    <span className="text-[10px] text-warning">Preview unavailable for this track</span>
+                    <span className="text-[12px] text-warning">Preview unavailable for this track (retired/deprecated Spotify feature)</span>
                 )}
             </div>
 

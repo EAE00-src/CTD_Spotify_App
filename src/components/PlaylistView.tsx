@@ -1,26 +1,38 @@
 import React, {useEffect, useState} from "react";
 import { getPlaylistTracks, type SpotifyTrack } from "../lib/services/spotifyPlaylists";
 import toast from "react-hot-toast";
-import { useParams } from "react-router";
+import { useOutletContext, useParams } from "react-router";
+
+interface OutletContextType {
+    setCurrentTrack: (track: SpotifyTrack) => void;
+    setQueue: (tracks: SpotifyTrack[]) => void;
+}
 
 
 const PlaylistView: React.FC = () => {
     const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [currentTrack, setCurrentTrack] = useState<SpotifyTrack | null> (null);
+    //const [currentTrack, setCurrentTrack] = useState<SpotifyTrack | null> (null);
 
+    //Pull the global player setters from the layout outlet context
+    const {setCurrentTrack, setQueue} = useOutletContext<OutletContextType>()
     const {playlistId} = useParams<{playlistId: string}>();
 
     //utilize fetch call
     useEffect(() => {
         const fetchTracks = async () => {
-            if(!playlistId) return; //exit early if playlist id is undefined
+
+            
             try {
                 setLoading(true);
-                const data = await getPlaylistTracks(playlistId);
+                const data = await getPlaylistTracks(playlistId!);
+                
                 //Extract the inner track object from each playlist item
-                const extractedTracks = data.items.map((item) => item.track).filter(Boolean)
+                const extractedTracks = data.items.map((track) => track.item).filter(Boolean)
                 setTracks(extractedTracks)
+                //update the global player queue in the layout
+                setQueue(extractedTracks)
+
                 if(extractedTracks.length > 0){
                     setCurrentTrack(extractedTracks[0]);
                 }
@@ -32,14 +44,15 @@ const PlaylistView: React.FC = () => {
             } finally {
                 setLoading(false)
             }
-            if(playlistId) {
+            
+        }
+        if(playlistId) {
                 fetchTracks();
             }
-        }
-    }, [playlistId])
+    }, [playlistId, setQueue, setCurrentTrack])
 
     if(loading) {
-        return <div className="loading loading-infinity">Loading...</div>
+        return <div className="w-full h-full flex justify-center items-center loading loading-infinity">Loading...</div>
     }
 
     return(
@@ -51,9 +64,7 @@ const PlaylistView: React.FC = () => {
                     <div 
                         key={track.id || index}
                         onClick={() => setCurrentTrack(track)}
-                        className={`flex items-center justify-between p-3 rounded-lg cursor-pointer hover:bg-base-200 transition-colors ${
-                            currentTrack?.id === track.id ? 'bg-primary/10 border border-primary/30' : ''
-                        }`}
+                        className={`flex items-center justify-between p-3 rounded-lg cursor-pointer hover:bg-base-200 transition-colors`}
                     >
                         <div className="flex items-center gap-4">
                             <span className="text-sm opacity-60 w-6 text-right">{index + 1}</span>
@@ -63,6 +74,19 @@ const PlaylistView: React.FC = () => {
                             <div>
                                 <p className="font-semibold text-sm truncate">{track.name}</p>
                                 <p className="text-xs opacity-70 truncate">{track.artists.map(char => char.name).join(', ')}</p>
+                            </div>
+                            {/**Right side: Duration + Open in Spotify Link */}
+                            <div className='flex items-center gap-4 ml-auto'>
+                                <a 
+                                    href={track.external_urls.spotify}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()} // Prevents row click state conflicts
+                                    className="btn btn-xs btn-outline btn-primary opacity-80 hover:opacity-100"
+                                    title="Open track in Spotify"
+                                >
+                                    Open ↗
+                                </a>
                             </div>
                             <span className="text-xs opacity-60">
                                 {Math.floor(track.duration_ms / 60000)}:{String(Math.floor((track.duration_ms % 60000) / 1000)).padStart(2, '0')}

@@ -11,6 +11,7 @@ const handleLogin = async() => {
         'user-read-private',
         'user-library-read', 
         'playlist-read-private',
+        'playlist-read-collaborative'
     ]
     const scopeString: string = scopes.join(' ')
 
