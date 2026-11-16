@@ -1,4 +1,4 @@
-import { CirclePlayIcon, FlameIcon, HeartIcon, Library, RssIcon, SquareArrowRightExitIcon, } from "lucide-react";
+import { Library, SquareArrowRightExitIcon, } from "lucide-react";
 import type { LucideIcon } from "lucide-react/types";
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
@@ -39,10 +39,7 @@ const Sidebar: React.FC = () => {
     }
     //Navigation links
     const navItems: NavItem[] = [
-        {path:'/feed', label: 'Feed', icon: RssIcon},
-        {path:'/trending', label: 'Trending', icon:FlameIcon},
-        {path:'/player', label: 'Player', icon: CirclePlayIcon},
-        {path:'/favorites', label: 'Favorites', icon: HeartIcon},
+        //{path:'/player', label: 'Player', icon: CirclePlayIcon},
         {path:'/library', label:'Library', icon: Library}
     ]
     //theme setting on /*<root>*/

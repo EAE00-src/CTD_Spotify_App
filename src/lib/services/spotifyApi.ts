@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { AxiosInstance } from "axios";
 
-const spotifyApi: AxiosInstance = axios.create({
+export const spotifyApi: AxiosInstance = axios.create({
     baseURL: 'https://api.spotify.com/v1',
 });
 //Request interceptors to automatically attach the token to every request

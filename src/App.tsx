@@ -7,6 +7,10 @@ import Login from './components/Login'
 import Callback from './components/Callback'
 import NotFound from './pages/404'
 import { RequireAuthParams } from './components/guards/RequireAuthParams'
+import { useState } from 'react'
+import type { SpotifyTrack } from './lib/services/spotifyPlaylists'
+import { Player } from './components/Player'
+import PlaylistView from './components/PlaylistView'
 
 const AuthenticatedLayout = () => {
   const token = sessionStorage.getItem('spotify_access_token')
@@ -14,13 +18,26 @@ const AuthenticatedLayout = () => {
   if(!token){
     return <Navigate to='/' replace />
   }
+
+  //music player integration
+  const [currentTrack, setCurrentTrack] = useState<SpotifyTrack | null>(null);
+  const [queue, setQueue] = useState<SpotifyTrack[]>([])
   return (
+    <div className='h-screen w-screen border rounded-4xl flex flex-col overflow-hidden'>
     <div className='h-screen w-full border rounded-4xl flex overflow-hidden'>
       <Sidebar /> {/**Renders only for logged in users */}
       <main className='h-full w-full rounded-4xl flex overflow-y-auto'>
-        <Outlet />
+        {/**Passing state handlers down to playlist view */}
+        <Outlet context={{setCurrentTrack, setQueue}} />
       </main>
     </div>
+      <Player 
+        currentTrack={currentTrack}
+        queue={queue}
+        onTrackChange={setCurrentTrack}
+      />
+    </div>
+
   )
 }
 
@@ -43,7 +60,7 @@ function App() {
           {/**Protected App Pages that require the token sent from Spotify's API */}
           <Route element={<AuthenticatedLayout />}>
             <Route path='/library' element={<Library />} />
-
+            <Route path='/library/playlist/:playlistId' element={<PlaylistView />} />
           </Route>
           {/**404 Error Fallback */}
           <Route path='*' element={<NotFound />} />
